@@ -3,458 +3,362 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Flex-City Team Dashboard – Premium Edition</title>
-
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet" />
-
+<title>Dashboard Team Flex-City</title>
 <style>
-  /* Reset */
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
+  /* Edler, moderner Stil */
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
   body {
-    margin: 0; padding: 0;
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #1b1b1b 0%, #2f2f2f 100%);
-    color: #eee;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-    transition: background 0.5s ease;
-  }
-
-  /* Container */
-  .container {
-    background: #222;
-    border-radius: 16px;
-    box-shadow:
-      0 8px 24px rgba(0,0,0,0.8),
-      inset 0 0 40px #3ab795cc;
-    max-width: 900px;
-    width: 100%;
-    padding: 2.5rem 3rem;
-    color: #b2f7ef;
-  }
-
-  h1 {
-    font-weight: 700;
-    font-size: 2.75rem;
-    margin-bottom: 0.3rem;
-    text-align: center;
-    color: #54f0c2;
-    text-shadow: 0 0 10px #2ec6a3;
-  }
-  p.subtitle {
-    font-weight: 400;
-    font-size: 1.1rem;
-    color: #88d6ce;
-    text-align: center;
-    margin-bottom: 3rem;
-    letter-spacing: 0.04em;
-  }
-
-  /* Tabs */
-  .tabs {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-bottom: 2.5rem;
-  }
-  .tab {
-    cursor: pointer;
-    padding: 0.75rem 2rem;
-    border-radius: 40px;
-    font-weight: 600;
-    color: #3ec3af;
-    background: #122e2a;
-    box-shadow:
-      0 0 15px #3ec3af66;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    color: #2d3748;
+    margin: 0;
+    padding: 2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
     user-select: none;
   }
-  .tab.active {
-    background: #54f0c2;
-    color: #0d201b;
-    box-shadow:
-      0 0 20px #54f0c2ff,
-      inset 0 0 30px #54f0c2cc;
+
+  h1, h2 {
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #4a5568;
+    padding-bottom: 0.3rem;
   }
 
-  /* Forms */
-  form {
-    max-width: 650px;
-    margin: 0 auto;
-  }
-
-  /* Form groups with floating labels */
-  .form-group {
-    position: relative;
-    margin-bottom: 2.5rem;
-  }
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    background: #1a3a36;
-    border: 2px solid #2ea99d;
-    border-radius: 12px;
-    padding: 1rem 1.2rem 1rem 1.2rem;
-    font-size: 1rem;
-    color: #b2f7ef;
-    outline: none;
-    resize: vertical;
-    transition: border-color 0.3s ease;
-    font-family: 'Roboto Mono', monospace;
-  }
-  .form-group textarea {
-    min-height: 120px;
-  }
-  .form-group input:focus,
-  .form-group textarea:focus {
-    border-color: #54f0c2;
-    box-shadow: 0 0 12px #54f0c2aa;
-  }
-
-  /* Floating labels */
-  label {
-    position: absolute;
-    top: 50%;
-    left: 1.3rem;
-    transform: translateY(-50%);
-    background: #222;
-    padding: 0 0.4rem;
-    color: #69bfb1cc;
-    font-weight: 600;
+  p {
     font-size: 0.9rem;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    user-select: none;
-  }
-  input:focus + label,
-  input:not(:placeholder-shown) + label,
-  textarea:focus + label,
-  textarea:not(:placeholder-shown) + label {
-    top: -0.6rem;
-    left: 1rem;
-    color: #54f0c2;
-    font-size: 0.75rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #4a5568;
   }
 
-  /* Buttons */
-  button {
-    background: #54f0c2;
-    border: none;
-    padding: 1rem 2.8rem;
-    font-weight: 700;
-    color: #0d201b;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow:
-      0 4px 15px #54f0c2aa,
-      inset 0 0 10px #2ea99dcc;
-    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  label {
     display: block;
-    margin: 2rem auto 0 auto;
-  }
-  button:hover {
-    background: #3ec3af;
-    box-shadow:
-      0 6px 20px #3ec3afdd,
-      inset 0 0 15px #27a494cc;
-  }
-
-  /* Error and success messages */
-  .message {
-    max-width: 650px;
-    margin: 0.7rem auto 0 auto;
-    text-align: center;
+    margin-top: 1rem;
     font-weight: 600;
-    user-select: none;
-  }
-  .error {
-    color: #ff6b6b;
-  }
-  .success {
-    color: #9fff5c;
+    color: #2d3748;
+    font-size: 0.9rem;
   }
 
-  /* Info box */
-  .info-box {
-    background: #11332e;
-    border-radius: 14px;
-    padding: 1.8rem 2rem;
-    box-shadow: inset 0 0 15px #2ea99dcc;
-    color: #89f5d6;
-    font-family: 'Roboto Mono', monospace;
+  input, textarea {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    background: #f7fafc;
+    border: 1.8px solid #a0aec0;
+    border-radius: 6px;
+    color: #2d3748;
+    padding: 0.8rem 1rem;
+    margin-top: 0.3rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #3182ce;
+    outline: none;
+    background: #ebf8ff;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  button {
+    margin-top: 1.5rem;
+    padding: 0.85rem 2rem;
+    background: #2b6cb0;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
     font-size: 1rem;
-    margin-bottom: 3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(43,108,176,0.4);
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background: #2c5282;
+  }
+
+  .info-box {
+    background: #edf2f7;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    color: #1a202c;
+    box-shadow: 0 0 8px rgba(160,160,160,0.15);
+    font-size: 0.95rem;
+    line-height: 1.5;
     white-space: pre-wrap;
   }
 
-  /* Stats section */
-  .stats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 2.5rem;
-  }
-  .stat {
-    background: #1f5d50;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 0 10px #54f0c2aa;
-    flex: 1;
-    margin: 0 0.75rem;
-  }
-  .stat h3 {
-    margin: 0 0 0.3rem 0;
-    font-size: 1.5rem;
-    color: #a4f7d8;
-  }
-  .stat p {
-    margin: 0;
+  .error {
+    color: #e53e3e;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
     font-weight: 600;
   }
 
-  /* Responsive */
-  @media (max-width: 720px) {
-    .stats {
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-    .stat {
-      margin: 0;
-    }
+  .success {
+    color: #38a169;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
   }
 
-  /* Dark Mode Toggle */
-  .dark-toggle {
-    position: fixed;
+  small {
+    font-size: 0.8rem;
+    color: #718096;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 2.5rem 0;
+  }
+
+  /* Form group styling for floating labels */
+  .form-group {
+    position: relative;
+    margin-top: 1.5rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    font-size: 0.9rem;
+    padding: 1.1rem 0.75rem 0.3rem 0.75rem;
+  }
+
+  .form-group label {
+    position: absolute;
     top: 1rem;
-    right: 1rem;
-    background: #222;
-    border: 2px solid #54f0c2;
-    color: #54f0c2;
-    padding: 0.5rem 1rem;
-    border-radius: 24px;
-    font-weight: 700;
-    cursor: pointer;
-    user-select: none;
-    box-shadow: 0 0 10px #54f0c2aa;
-    transition: all 0.3s ease;
-  }
-  .dark-toggle:hover {
-    background: #54f0c2;
-    color: #222;
-    box-shadow: 0 0 20px #54f0c2ff;
+    left: 0.75rem;
+    font-size: 0.85rem;
+    color: #718096;
+    pointer-events: none;
+    transition: 0.2s ease all;
+    background: #edf2f7;
+    padding: 0 0.3rem;
+    border-radius: 4px;
   }
 
-  /* Dark Mode Styles */
-  body.dark {
-    background: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
-    color: #ddd;
-  }
-  body.dark .container {
-    background: #111;
-    box-shadow:
-      0 8px 24px rgba(0,0,0,0.9),
-      inset 0 0 40px #0cf8caaa;
-    color: #a6fff1;
-  }
-  body.dark .tab {
-    background: #0c3834;
-    color: #0cf8ca;
-    box-shadow: 0 0 15px #0cf8ca66;
-  }
-  body.dark .tab.active {
-    background: #0cf8ca;
-    color: #01120f;
-    box-shadow: 0 0 20px #0cf8caff, inset 0 0 30px #0cf8caaa;
-  }
-  body.dark input, body.dark textarea {
-    background: #0e3b36;
-    border-color: #0cf8ca;
-    color: #a6fff1;
-    text-shadow: 0 0 6px #0cf8caaa;
-  }
-  body.dark input:focus, body.dark textarea:focus {
-    border-color: #0ff8d3;
-    box-shadow: 0 0 16px #0ff8d3cc;
-  }
-  body.dark label {
-    color: #0cf8caaa;
-  }
-  body.dark label:focus, body.dark input:focus + label, body.dark textarea:focus + label {
-    color: #0ff8d3;
-  }
-  body.dark button {
-    background: #0cf8ca;
-    color: #01120f;
-    box-shadow: 0 4px 15px #0cf8caff, inset 0 0 12px #0cf8caaa;
-  }
-  body.dark button:hover {
-    background: #0aafa1;
-    box-shadow: 0 6px 20px #0aafa1dd, inset 0 0 15px #0aafa1cc;
-  }
-  body.dark .info-box {
-    background: #06332e;
-    box-shadow: inset 0 0 20px #0cf8caaa;
-    color: #8fffea;
-  }
-  body.dark .stats .stat {
-    background: #054a44;
-    box-shadow: 0 0 12px #0cf8caaa;
-    color: #9ff7e6;
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label,
+  .form-group textarea:focus + label,
+  .form-group textarea:not(:placeholder-shown) + label {
+    top: 0.3rem;
+    font-size: 0.75rem;
+    color: #2b6cb0;
   }
 </style>
 </head>
 <body>
 
-<div class="dark-toggle" id="darkToggle">Dark Mode</div>
+<h1>Dashboard Team Flex-City</h1>
+<p>Dies ist das offizielle Dashboard von Flex City</p>
 
-<div class="container">
-  <h1>Flex-City Team Dashboard</h1>
-  <p class="subtitle">Das exklusive Management-Dashboard für Flex-City Teammitglieder</p>
+<!-- Abmeldung-Team Formular -->
+<section>
+  <h2>Abmeldung-Team</h2>
+  <form id="abmeldungForm" novalidate>
+    <label for="wer">Wer: <span style="color:#e53e3e;">*</span></label>
+    <input type="text" id="wer" name="wer" required autocomplete="off" placeholder=" " />
 
-  <nav class="tabs" aria-label="Navigation">
-    <div class="tab active" data-tab="abmeldung" tabindex="0" role="button" aria-selected="true" aria-controls="abmeldungTab" id="tab-abmeldung">Abmeldung-Team</div>
-    <div class="tab" data-tab="teaminfo" tabindex="0" role="button" aria-selected="false" aria-controls="teaminfoTab" id="tab-teaminfo">Team Informationen</div>
-    <div class="tab" data-tab="stats" tabindex="0" role="button" aria-selected="false" aria-controls="statsTab" id="tab-stats">Team Statistik</div>
-  </nav>
+    <label for="wieLange">Wie lange: <span style="color:#e53e3e;">*</span></label>
+    <input type="text" id="wieLange" name="wieLange" placeholder="TT.MM.JJ-TT.MM.JJ" pattern="\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{2}" required autocomplete="off" placeholder=" " />
+    <small>Format: TT.MM.JJ-TT.MM.JJ</small>
 
-  <!-- Abmeldung -->
-  <section id="abmeldungTab" role="tabpanel" aria-labelledby="tab-abmeldung">
-    <form id="abmeldungForm" novalidate>
-      <div class="form-group">
-        <input type="text" id="wer" name="wer" placeholder=" " required autocomplete="off" />
-        <label for="wer">Wer meldet sich ab?</label>
-      </div>
-      <div class="form-group">
-        <input type="text" id="warum" name="warum" placeholder=" " required autocomplete="off" />
-        <label for="warum">Warum?</label>
-      </div>
-      <div class="form-group">
-        <textarea id="zusatzinfo" name="zusatzinfo" placeholder=" "></textarea>
-        <label for="zusatzinfo">Zusätzliche Infos (optional)</label>
-      </div>
-      <button type="submit">Abmelden</button>
-      <div id="formMessage" class="message" role="alert" aria-live="polite"></div>
-    </form>
-  </section>
+    <label for="grund">Welcher Grund: <span style="color:#e53e3e;">*</span> (mindestens 50 Wörter)</label>
+    <textarea id="grund" name="grund" minlength="250" required placeholder="Bitte mindestens 50 Wörter eingeben..."></textarea>
 
-  <!-- Teaminfo -->
-  <section id="teaminfoTab" role="tabpanel" aria-labelledby="tab-teaminfo" hidden>
-    <div class="info-box" tabindex="0">
-      <strong>Team Name:</strong> Flex-City Community<br />
-      <strong>Mitglieder:</strong> 42<br />
-      <strong>Aktive Projekte:</strong> 5<br />
-      <strong>Letztes Meeting:</strong> 21.07.2025, 19:00 Uhr<br />
-      <strong>Teamleiter:</strong> Alex Müller<br />
-      <strong>Kontakt:</strong> team@flex-city.de
+    <button type="submit">Abmelden</button>
+    <p id="abmeldungError" class="error" aria-live="assertive"></p>
+    <p id="abmeldungSuccess" class="success" aria-live="polite"></p>
+  </form>
+</section>
+
+<hr />
+
+<!-- Team Information -->
+<section>
+  <h2>TEAM INFORMATION</h2>
+  <div id="teamInfoDisplay" class="info-box" tabindex="0" aria-live="polite">
+    <strong>Team Name:</strong> Flex-City Community<br />
+    <strong>Mitglieder:</strong> 42<br />
+    <strong>Aktive Projekte:</strong> 5<br />
+    <strong>Letztes Meeting:</strong> 21.07.2025, 19:00 Uhr<br />
+    <strong>Teamleiter:</strong> Alex Müller<br />
+    <strong>Kontakt:</strong> team@flex-city.de
+  </div>
+
+  <form id="teamInfoForm" novalidate style="margin-top: 2rem;">
+    <div class="form-group">
+      <input type="text" id="teamName" name="teamName" placeholder=" " required autocomplete="off" />
+      <label for="teamName">Team Name <span style="color:#e53e3e;">*</span></label>
     </div>
-  </section>
-
-  <!-- Stats -->
-  <section id="statsTab" role="tabpanel" aria-labelledby="tab-stats" hidden>
-    <div class="stats" tabindex="0" aria-label="Team Statistik">
-      <div class="stat">
-        <h3>42</h3>
-        <p>Mitglieder</p>
-      </div>
-      <div class="stat">
-        <h3>5</h3>
-        <p>Projekte</p>
-      </div>
-      <div class="stat">
-        <h3>89%</h3>
-        <p>Aktive Teilnahme</p>
-      </div>
+    <div class="form-group">
+      <input type="number" id="mitglieder" name="mitglieder" placeholder=" " min="1" required autocomplete="off" />
+      <label for="mitglieder">Mitgliederanzahl <span style="color:#e53e3e;">*</span></label>
     </div>
-  </section>
-</div>
+    <div class="form-group">
+      <input type="number" id="projekte" name="projekte" placeholder=" " min="0" required autocomplete="off" />
+      <label for="projekte">Aktive Projekte <span style="color:#e53e3e;">*</span></label>
+    </div>
+    <div class="form-group">
+      <input type="datetime-local" id="meeting" name="meeting" placeholder=" " required autocomplete="off" />
+      <label for="meeting">Letztes Meeting (Datum & Zeit) <span style="color:#e53e3e;">*</span></label>
+    </div>
+    <div class="form-group">
+      <input type="text" id="teamleiter" name="teamleiter" placeholder=" " required autocomplete="off" />
+      <label for="teamleiter">Teamleiter <span style="color:#e53e3e;">*</span></label>
+    </div>
+    <div class="form-group">
+      <input type="email" id="kontakt" name="kontakt" placeholder=" " required autocomplete="off" />
+      <label for="kontakt">Kontakt Email <span style="color:#e53e3e;">*</span></label>
+    </div>
+    <button type="submit">Team Info aktualisieren</button>
+    <p id="teamInfoMessage" aria-live="assertive"></p>
+  </form>
+</section>
 
 <script>
-  // Tab navigation
-  const tabs = document.querySelectorAll('.tab');
-  const sections = {
-    abmeldung: document.getElementById('abmeldungTab'),
-    teaminfo: document.getElementById('teaminfoTab'),
-    stats: document.getElementById('statsTab')
-  };
+  const abmeldungWebhookUrl = "https://discord.com/api/webhooks/1397035955671798033/mcDxMU3kHKNl_9ev-afJ_xGI79vvkfwFIV502e0mB8omEOZ-_zxC6bRjs7RraC-QuLJW";
+  const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab));
-    tab.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        switchTab(tab);
-      }
-    });
-  });
-
-  function switchTab(activeTab) {
-    tabs.forEach(t => {
-      t.classList.remove('active');
-      t.setAttribute('aria-selected', 'false');
-      sections[t.dataset.tab].hidden = true;
-    });
-    activeTab.classList.add('active');
-    activeTab.setAttribute('aria-selected', 'true');
-    sections[activeTab.dataset.tab].hidden = false;
+  function countWords(str) {
+    return str.trim().split(/\s+/).filter(w => w.length > 0).length;
   }
 
-  // Form validation and confirmation
-  const form = document.getElementById('abmeldungForm');
-  const formMessage = document.getElementById('formMessage');
-
-  form.addEventListener('submit', e => {
+  document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    formMessage.textContent = '';
-    formMessage.className = 'message';
+    const wer = this.wer.value.trim();
+    const wieLange = this.wieLange.value.trim();
+    const grund = this.grund.value.trim();
+    const errorEl = document.getElementById('abmeldungError');
+    const successEl = document.getElementById('abmeldungSuccess');
+    errorEl.textContent = "";
+    successEl.textContent = "";
 
-    const wer = form.wer.value.trim();
-    const warum = form.warum.value.trim();
-
-    if (!wer || !warum) {
-      formMessage.textContent = 'Bitte füllen Sie alle Pflichtfelder aus.';
-      formMessage.classList.add('error');
+    if(countWords(grund) < 50) {
+      errorEl.textContent = "Der Grund muss mindestens 50 Wörter enthalten.";
       return;
     }
 
-    if (wer.length < 3) {
-      formMessage.textContent = 'Bitte geben Sie einen gültigen Namen ein (mindestens 3 Zeichen).';
-      formMessage.classList.add('error');
-      return;
-    }
-    if (warum.length < 5) {
-      formMessage.textContent = 'Bitte geben Sie einen ausführlichen Grund an (mindestens 5 Zeichen).';
-      formMessage.classList.add('error');
-      return;
-    }
+    const message = `**Abmeldung-Team**\n**Wer:** ${wer}\n**Wie lange:** ${wieLange}\n**Welcher Grund:**\n${grund}`;
 
-    // Confirmation
-    const confirmMsg = `Sind Sie sicher, dass Sie sich abmelden möchten?\n\nWer: ${wer}\nWarum: ${warum}\nZusätzliche Infos: ${form.zusatzinfo.value.trim() || '(keine)'}`;
-    if (!confirm(confirmMsg)) {
-      return;
-    }
+    try {
+      const res = await fetch(abmeldungWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message }),
+      });
 
-    // Simulate submission
-    formMessage.textContent = 'Ihre Abmeldung wurde erfolgreich übermittelt.';
-    formMessage.classList.add('success');
-    form.reset();
+      if(res.ok){
+        successEl.textContent = "Abmeldung wurde erfolgreich gesendet!";
+        this.reset();
+      } else {
+        errorEl.textContent = "Fehler beim Senden an Discord.";
+      }
+    } catch (err) {
+      errorEl.textContent = "Netzwerkfehler beim Senden.";
+    }
   });
 
-  // Dark mode toggle
-  const darkToggle = document.getElementById('darkToggle');
-  darkToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    if (document.body.classList.contains('dark')) {
-      darkToggle.textContent = 'Light Mode';
-    } else {
-      darkToggle.textContent = 'Dark Mode';
+  const teamInfoDisplay = document.getElementById('teamInfoDisplay');
+  const teamInfoForm = document.getElementById('teamInfoForm');
+  const teamInfoMessage = document.getElementById('teamInfoMessage');
+
+  function fillTeamInfoForm() {
+    const lines = teamInfoDisplay.innerText.split('\n');
+    const data = {};
+    lines.forEach(line => {
+      const [key, ...value] = line.split(':');
+      data[key.trim()] = value.join(':').trim();
+    });
+
+    teamInfoForm.teamName.value = data['Team Name'] || '';
+    teamInfoForm.mitglieder.value = data['Mitglieder'] || '';
+    teamInfoForm.projekte.value = data['Aktive Projekte'] || '';
+
+    if(data['Letztes Meeting']) {
+      const dt = data['Letztes Meeting'].replace(' Uhr', '').split(', ');
+      if(dt.length === 2) {
+        const dateParts = dt[0].split('.');
+        const timeParts = dt[1].split(':');
+        const formatted = `${dateParts[2]}-${dateParts[1].padStart(2,'0')}-${dateParts[0].padStart(2,'0')}T${timeParts[0].padStart(2,'0')}:${timeParts[1].padStart(2,'0')}`;
+        teamInfoForm.meeting.value = formatted;
+      }
+    }
+
+    teamInfoForm.teamleiter.value = data['Teamleiter'] || '';
+    teamInfoForm.kontakt.value = data['Kontakt'] || '';
+  }
+  fillTeamInfoForm();
+
+  teamInfoForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const teamName = this.teamName.value.trim();
+    const mitglieder = this.mitglieder.value.trim();
+    const projekte = this.projekte.value.trim();
+    const meeting = this.meeting.value.trim();
+    const teamleiter = this.teamleiter.value.trim();
+    const kontakt = this.kontakt.value.trim();
+    teamInfoMessage.textContent = "";
+
+    if (!teamName || !mitglieder || !projekte || !meeting || !teamleiter || !kontakt) {
+      teamInfoMessage.textContent = "Bitte alle Felder ausfüllen.";
+      teamInfoMessage.className = "error";
+      return;
+    }
+
+    // Meeting formatieren
+    const dt = new Date(meeting);
+    if (isNaN(dt)) {
+      teamInfoMessage.textContent = "Ungültiges Datum für Meeting.";
+      teamInfoMessage.className = "error";
+      return;
+    }
+    const formattedMeeting = dt.toLocaleDateString('de-DE') + ", " + dt.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'});
+
+    const message = `**TEAM INFORMATION UPDATED**\n` +
+                    `**Team Name:** ${teamName}\n` +
+                    `**Mitglieder:** ${mitglieder}\n` +
+                    `**Aktive Projekte:** ${projekte}\n` +
+                    `**Letztes Meeting:** ${formattedMeeting}\n` +
+                    `**Teamleiter:** ${teamleiter}\n` +
+                    `**Kontakt:** ${kontakt}`;
+
+    try {
+      const res = await fetch(teamInfoWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message }),
+      });
+
+      if(res.ok){
+        teamInfoMessage.textContent = "Team-Info wurde erfolgreich gesendet!";
+        teamInfoMessage.className = "success";
+
+        // Anzeige aktualisieren
+        teamInfoDisplay.innerHTML = `<strong>Team Name:</strong> ${teamName}<br />
+                                    <strong>Mitglieder:</strong> ${mitglieder}<br />
+                                    <strong>Aktive Projekte:</strong> ${projekte}<br />
+                                    <strong>Letztes Meeting:</strong> ${formattedMeeting}<br />
+                                    <strong>Teamleiter:</strong> ${teamleiter}<br />
+                                    <strong>Kontakt:</strong> ${kontakt}`;
+      } else {
+        teamInfoMessage.textContent = "Fehler beim Senden an Discord.";
+        teamInfoMessage.className = "error";
+      }
+    } catch (err) {
+      teamInfoMessage.textContent = "Netzwerkfehler beim Senden.";
+      teamInfoMessage.className = "error";
     }
   });
 </script>
