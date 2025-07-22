@@ -121,13 +121,15 @@
   </section>
 
   <script>
-    const abmeldungWebhookUrl = "https://discord.com/api/webhooks/DEINE_ID_1";
-    const teamInfoWebhookUrl = "https://discord.com/api/webhooks/DEINE_ID_2";
+    // ✅ DEINE DISCORD WEBHOOK-URLs
+    const abmeldungWebhookUrl = "https://discord.com/api/webhooks/1397035955671798033/mcDxMU3kHKNl_9ev-afJ_xGI79vvkfwFIV502e0mB8omEOZ-_zxC6bRjs7RraC-QuLJW";
+    const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
 
     function countWords(str) {
       return str.trim().split(/\s+/).filter(w => w).length;
     }
 
+    // Abmeldung-Formular
     document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const errorEl = document.getElementById('abmeldungError');
@@ -163,6 +165,7 @@
       }
     });
 
+    // Team Info Formular
     document.getElementById('teamInfoForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const errorEl = document.getElementById('teamInfoError');
