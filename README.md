@@ -142,10 +142,29 @@
     </form>
   </section>
 
+  <hr />
+
+  <!-- <ABSTIMMUNG> Formular -->
+  <section>
+    <h2>&lt;ABSTIMMUNG&gt;</h2>
+    <form id="abstimmungForm">
+      <label for="abstimmungWas">Abstimmung - (Was soll abgestimmt werden): *</label>
+      <textarea id="abstimmungWas" name="abstimmungWas" required placeholder="Thema der Abstimmung..."></textarea>
+
+      <label for="abstimmungZusatz">Zusatz Text (optional):</label>
+      <textarea id="abstimmungZusatz" name="abstimmungZusatz" placeholder="Optionaler Zusatztext..."></textarea>
+
+      <button type="submit">Abstimmen</button>
+      <p id="abstimmungError" class="error"></p>
+      <p id="abstimmungSuccess" class="success"></p>
+    </form>
+  </section>
+
   <script>
     const abmeldungWebhookUrl = "https://discord.com/api/webhooks/1397035955671798033/mcDxMU3kHKNl_9ev-afJ_xGI79vvkfwFIV502e0mB8omEOZ-_zxC6bRjs7RraC-QuLJW";
     const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
     const meetingWebhookUrl = "https://discord.com/api/webhooks/1397079732733874309/pUD5fa9i3SblLV6sT2uMMms-hf80xBycKIgl_h8YKy4bZePu6t-_dseR64Fd7ixEVhuX";
+    const abstimmungWebhookUrl = "https://discord.com/api/webhooks/1397080136347549836/YCNK3xZejDYa2fsCwTPiAB3egOp0iEVQDo4HDmtR78-B_mPtRRkLCmVnjsXBuLF6Pgdo";
 
     // Abmeldung
     document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
@@ -265,6 +284,45 @@
         errorEl.textContent = "Netzwerkfehler beim Senden.";
       }
     });
+
+    // Abstimmung
+    document.getElementById('abstimmungForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const abstimmungWas = this.abstimmungWas.value.trim();
+      const abstimmungZusatz = this.abstimmungZusatz.value.trim();
+      const errorEl = document.getElementById('abstimmungError');
+      const successEl = document.getElementById('abstimmungSuccess');
+      errorEl.textContent = "";
+      successEl.textContent = "";
+
+      if (!abstimmungWas) {
+        errorEl.textContent = "Bitte gib ein Thema für die Abstimmung an.";
+        return;
+      }
+
+      let message = `🗳️ **Neue Abstimmung gestartet**\n\n📋 **Thema:** ${abstimmungWas}\n\n✅ Ja\n❌ Nein`;
+      if (abstimmungZusatz) {
+        message += `\n\nℹ️ Zusatz: ${abstimmungZusatz}`;
+      }
+
+      try {
+        const res = await fetch(abstimmungWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: message }),
+        });
+
+        if (res.ok) {
+          successEl.textContent = "Abstimmung wurde erfolgreich gesendet!";
+          this.reset();
+        } else {
+          errorEl.textContent = "Fehler beim Senden an Discord.";
+        }
+      } catch (err) {
+        errorEl.textContent = "Netzwerkfehler beim Senden.";
+      }
+    });
+
   </script>
 
 </body>
