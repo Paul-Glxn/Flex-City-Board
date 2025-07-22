@@ -4,61 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard Team Flex-City</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #1e1e1e;
-      color: #ffffff;
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 1rem;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1c1c1c;
+      color: #f2f2f2;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
+
     h1, h2 {
-      color: #90ee90;
+      color: #00ffcc;
+      border-bottom: 2px solid #00ffcc;
+      padding-bottom: 5px;
     }
-    form {
-      margin-top: 1rem;
-      background: #2c2c2c;
-      padding: 1rem;
-      border-radius: 6px;
-    }
+
     label {
       display: block;
-      margin-top: 0.8rem;
+      margin-top: 1rem;
       font-weight: bold;
     }
+
     input, textarea {
       width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.2rem;
-      background: #3a3a3a;
-      border: 1px solid #555;
+      padding: 10px;
+      margin-top: 5px;
+      background-color: #2a2a2a;
       color: #fff;
-      border-radius: 4px;
+      border: 1px solid #555;
+      border-radius: 5px;
     }
+
     button {
       margin-top: 1rem;
-      background: #90ee90;
+      padding: 10px 20px;
+      background-color: #00cc88;
       border: none;
-      padding: 0.7rem 1.2rem;
+      border-radius: 5px;
+      color: #000;
       font-weight: bold;
       cursor: pointer;
-      border-radius: 4px;
-      color: #000;
     }
-    .info-box {
-      background: #333;
-      padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
+
+    button:hover {
+      background-color: #00ffaa;
     }
+
     .error {
       color: #ff6b6b;
       margin-top: 0.5rem;
     }
+
     .success {
       color: #9fff5c;
       margin-top: 0.5rem;
+    }
+
+    .info-box {
+      background-color: #2a2a2a;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-left: 4px solid #00ffcc;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #333;
+      margin: 2rem 0;
     }
   </style>
 </head>
@@ -66,61 +80,60 @@
 
 <h1>Dashboard Team Flex-City</h1>
 
-<!-- Abmeldung Formular -->
 <section>
   <h2>Abmeldung-Team</h2>
   <form id="abmeldungForm">
     <label for="wer">Wer:</label>
-    <input type="text" id="wer" name="wer" required autocomplete="off" />
+    <input type="text" id="wer" name="wer" required />
 
-    <label for="wieLange">Wie lange:</label>
-    <input type="text" id="wieLange" name="wieLange" placeholder="TT.MM.JJ - TT.MM.JJ" required autocomplete="off" />
+    <label for="wieLange">Wie lange (Format: TT.MM.JJ-TT.MM.JJ):</label>
+    <input type="text" id="wieLange" name="wieLange" required pattern="\d{2}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{2}" />
 
-    <label for="grund">Grund (mind. 50 Wörter):</label>
-    <textarea id="grund" name="grund" required minlength="250"></textarea>
+    <label for="grund">Grund (min. 50 Wörter):</label>
+    <textarea id="grund" name="grund" minlength="250" required></textarea>
 
-    <button type="submit">Abmeldung absenden</button>
-    <p id="abmeldungError" class="error"></p>
-    <p id="abmeldungSuccess" class="success"></p>
+    <button type="submit">Abmelden</button>
+    <p class="error" id="abmeldungError"></p>
+    <p class="success" id="abmeldungSuccess"></p>
   </form>
 </section>
 
-<!-- Team Information Formular -->
+<hr />
+
 <section>
-  <h2 style="margin-top: 3rem;">Team Information</h2>
-  <div id="teamInfoBox" class="info-box">Keine verfügbar</div>
+  <h2>Team Information</h2>
+  <div id="teamInfoBox" class="info-box">Keine Informationen verfügbar.</div>
 
   <form id="teamInfoForm">
     <label for="ueberschrift">Überschrift:</label>
-    <input type="text" id="ueberschrift" name="ueberschrift" required autocomplete="off" />
+    <input type="text" id="ueberschrift" name="ueberschrift" required />
 
     <label for="haupttext">Haupttext:</label>
     <textarea id="haupttext" name="haupttext" required></textarea>
 
     <label for="geschriebenVon">Geschrieben von:</label>
-    <input type="text" id="geschriebenVon" name="geschriebenVon" required autocomplete="off" />
+    <input type="text" id="geschriebenVon" name="geschriebenVon" required />
 
     <button type="submit">Information absenden</button>
-    <p id="teamInfoError" class="error"></p>
-    <p id="teamInfoSuccess" class="success"></p>
+    <p class="error" id="teamInfoError"></p>
+    <p class="success" id="teamInfoSuccess"></p>
   </form>
 </section>
 
 <script>
-  // Webhook-URLs
   const abmeldungWebhookUrl = "https://discord.com/api/webhooks/1397035955671798033/mcDxMU3kHKNl_9ev-afJ_xGI79vvkfwFIV502e0mB8omEOZ-_zxC6bRjs7RraC-QuLJW";
   const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
 
-  function countWords(text) {
-    return text.trim().split(/\s+/).length;
+  function countWords(str) {
+    return str.trim().split(/\s+/).length;
   }
 
-  // Abmeldung Formular
   document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const wer = this.wer.value.trim();
     const wieLange = this.wieLange.value.trim();
     const grund = this.grund.value.trim();
+
     const errorEl = document.getElementById('abmeldungError');
     const successEl = document.getElementById('abmeldungSuccess');
     errorEl.textContent = "";
@@ -131,17 +144,17 @@
       return;
     }
 
-    const message = `📢 **Abmeldung im Team**\n👤 **Wer:** ${wer}\n📅 **Zeitraum:** ${wieLange}\n📝 **Grund:**\n${grund}`;
+    const message = `📢 **Abmeldung eines Teammitglieds** 📢\n\n👤 **Wer:** ${wer}\n📅 **Zeitraum:** ${wieLange}\n📝 **Grund:**\n>>> ${grund}`;
 
     try {
       const res = await fetch(abmeldungWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: message }),
+        body: JSON.stringify({ content: message })
       });
 
       if (res.ok) {
-        successEl.textContent = "Abmeldung erfolgreich an Discord gesendet!";
+        successEl.textContent = "Abmeldung wurde erfolgreich gesendet!";
         this.reset();
       } else {
         errorEl.textContent = "Fehler beim Senden an Discord.";
@@ -151,35 +164,30 @@
     }
   });
 
-  // Team Information Formular
   document.getElementById('teamInfoForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const ueberschrift = this.ueberschrift.value.trim();
     const haupttext = this.haupttext.value.trim();
     const geschriebenVon = this.geschriebenVon.value.trim();
+
     const errorEl = document.getElementById('teamInfoError');
     const successEl = document.getElementById('teamInfoSuccess');
     errorEl.textContent = "";
     successEl.textContent = "";
 
-    if (!ueberschrift || !haupttext || !geschriebenVon) {
-      errorEl.textContent = "Bitte alle Felder ausfüllen.";
-      return;
-    }
-
-    const message = `📌 **Neue Team-Information**\n📖 **Titel:** ${ueberschrift}\n🗒️ **Text:**\n${haupttext}\n✍️ **Verfasst von:** ${geschriebenVon}`;
+    const message = `📌 **Neue Team-Info**\n\n📖 **${ueberschrift}**\n\n🗒️ >>> ${haupttext}\n\n✍️ Geschrieben von: **${geschriebenVon}**`;
 
     try {
       const res = await fetch(teamInfoWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: message }),
+        body: JSON.stringify({ content: message })
       });
 
       if (res.ok) {
-        successEl.textContent = "Information erfolgreich an Discord gesendet!";
-        this.reset();
+        successEl.textContent = "Information erfolgreich gesendet!";
         document.getElementById('teamInfoBox').textContent = haupttext;
+        this.reset();
       } else {
         errorEl.textContent = "Fehler beim Senden an Discord.";
       }
