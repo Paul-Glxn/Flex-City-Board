@@ -70,24 +70,27 @@
   <h1>Dashboard Team Flex-City</h1>
   <p>Dies ist das offizielle Dashboard von Flex City</p>
 
-  <!-- Meetingliste -->
+  <!-- MEETING LIST -->
   <div id="meetingListDisplay" class="info-box">
     📅 <strong>Geplante Meetings:</strong><br />
     <span id="meetingListContent">Keine Meetings eingetragen.</span>
   </div>
 
-  <!-- Abmeldung -->
+  <!-- Abmeldung-Team Formular -->
   <section>
     <h2>Abmeldung-Team</h2>
     <form id="abmeldungForm">
       <label for="wer">Wer: *</label>
-      <input type="text" id="wer" name="wer" required />
+      <input type="text" id="wer" name="wer" required autocomplete="off" />
+      
+      <label for="von">Von: *</label>
+      <input type="date" id="von" name="von" required />
 
-      <label for="wieLange">Wie lange (TT.MM.JJ-TT.MM.JJ): *</label>
-      <input type="text" id="wieLange" name="wieLange" required pattern="\\d{2}\\.\\d{2}\\.\\d{2}-\\d{2}\\.\\d{2}\\.\\d{2}" />
+      <label for="bis">Bis: *</label>
+      <input type="date" id="bis" name="bis" required />
 
-      <label for="grund">Welcher Grund: (mind. 50 Wörter)</label>
-      <textarea id="grund" name="grund" minlength="250" required></textarea>
+      <label for="grund">Welcher Grund: *</label>
+      <textarea id="grund" name="grund" minlength="50" required placeholder="Bitte mindestens 50 Wörter eingeben..."></textarea>
 
       <button type="submit">Abmelden</button>
       <p id="abmeldungError" class="error"></p>
@@ -97,20 +100,20 @@
 
   <hr />
 
-  <!-- Team-Information -->
+  <!-- Team Information -->
   <section>
     <h2>Team Information</h2>
-    <div id="teamInfoBox" class="info-box">Keine Informationen eingetragen.</div>
+    <div id="teamInfoBox" class="info-box">Keine Verfügbar</div>
 
     <form id="teamInfoForm">
       <label for="ueberschrift">Überschrift: *</label>
-      <input type="text" id="ueberschrift" name="ueberschrift" required />
+      <input type="text" id="ueberschrift" name="ueberschrift" required autocomplete="off" />
 
       <label for="haupttext">Haupttext: *</label>
       <textarea id="haupttext" name="haupttext" required></textarea>
 
       <label for="geschriebenVon">Geschrieben von: *</label>
-      <input type="text" id="geschriebenVon" name="geschriebenVon" required />
+      <input type="text" id="geschriebenVon" name="geschriebenVon" required autocomplete="off" />
 
       <button type="submit">Informationen absenden</button>
       <p id="teamInfoError" class="error"></p>
@@ -120,7 +123,7 @@
 
   <hr />
 
-  <!-- Meetings -->
+  <!-- /MEETINGS/ Formular -->
   <section>
     <h2>/MEETINGS/</h2>
     <form id="meetingForm">
@@ -128,10 +131,10 @@
       <input type="datetime-local" id="meetingDatum" name="meetingDatum" required />
 
       <label for="meetingGrund">Grund (Was wird besprochen): *</label>
-      <textarea id="meetingGrund" name="meetingGrund" required></textarea>
+      <textarea id="meetingGrund" name="meetingGrund" required placeholder="Kurze Beschreibung..."></textarea>
 
       <label for="meetingLeiter">Leiter des Meetings: *</label>
-      <input type="text" id="meetingLeiter" name="meetingLeiter" required />
+      <input type="text" id="meetingLeiter" name="meetingLeiter" required autocomplete="off" />
 
       <button type="submit">Meeting eintragen</button>
       <p id="meetingError" class="error"></p>
@@ -144,7 +147,76 @@
     const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
     const meetingWebhookUrl = "https://discord.com/api/webhooks/1397079732733874309/pUD5fa9i3SblLV6sT2uMMms-hf80xBycKIgl_h8YKy4bZePu6t-_dseR64Fd7ixEVhuX";
 
-    // Show Meetings
+    // Abmeldung
+    document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const wer = this.wer.value.trim();
+      const von = this.von.value;
+      const bis = this.bis.value;
+      const grund = this.grund.value.trim();
+      const errorEl = document.getElementById('abmeldungError');
+      const successEl = document.getElementById('abmeldungSuccess');
+      errorEl.textContent = "";
+      successEl.textContent = "";
+
+      if (grund.split(/\s+/).length < 50) {
+        errorEl.textContent = "Der Grund muss mindestens 50 Wörter enthalten.";
+        return;
+      }
+
+      const message = `📢 **Abmeldung im Team**\n\n👤 **Wer:** ${wer}\n📅 **Von:** ${von} bis ${bis}\n✏️ **Grund:**\n${grund}`;
+
+      try {
+        const res = await fetch(abmeldungWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: message }),
+        });
+
+        if (res.ok) {
+          successEl.textContent = "Abmeldung wurde erfolgreich gesendet!";
+          this.reset();
+        } else {
+          errorEl.textContent = "Fehler beim Senden an Discord.";
+        }
+      } catch (err) {
+        errorEl.textContent = "Netzwerkfehler beim Senden.";
+      }
+    });
+
+    // Team Info
+    document.getElementById('teamInfoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const ueberschrift = this.ueberschrift.value.trim();
+      const haupttext = this.haupttext.value.trim();
+      const geschriebenVon = this.geschriebenVon.value.trim();
+      const errorEl = document.getElementById('teamInfoError');
+      const successEl = document.getElementById('teamInfoSuccess');
+      errorEl.textContent = "";
+      successEl.textContent = "";
+
+      const message = `📝 **Team Information**\n\n📌 **${ueberschrift}**\n\n${haupttext}\n\n✍️ *Geschrieben von:* ${geschriebenVon}`;
+
+      try {
+        const res = await fetch(teamInfoWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: message }),
+        });
+
+        if (res.ok) {
+          successEl.textContent = "Team Information wurde erfolgreich gesendet!";
+          document.getElementById('teamInfoBox').textContent = haupttext;
+          this.reset();
+        } else {
+          errorEl.textContent = "Fehler beim Senden an Discord.";
+        }
+      } catch (err) {
+        errorEl.textContent = "Netzwerkfehler beim Senden.";
+      }
+    });
+
+    // Meetingliste
     function showMeetingList() {
       const list = JSON.parse(localStorage.getItem('meetings') || "[]");
       const display = document.getElementById('meetingListContent');
@@ -156,91 +228,21 @@
         `- 🕒 ${m.datum} | 📋 ${m.grund} | 👤 ${m.leiter}`
       ).join("<br>");
     }
-
     showMeetingList();
 
-    // Abmeldung senden
-    document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const wer = this.wer.value.trim();
-      const wieLange = this.wieLange.value.trim();
-      const grund = this.grund.value.trim();
-      const words = grund.trim().split(/\s+/).length;
-
-      const errorEl = document.getElementById('abmeldungError');
-      const successEl = document.getElementById('abmeldungSuccess');
-      errorEl.textContent = "";
-      successEl.textContent = "";
-
-      if (words < 50) {
-        errorEl.textContent = "Grund muss mindestens 50 Wörter enthalten.";
-        return;
-      }
-
-      const message = `📢 **Team-Abmeldung**\n👤 **Wer:** ${wer}\n📅 **Wie lange:** ${wieLange}\n📝 **Grund:**\n${grund}`;
-
-      try {
-        const res = await fetch(abmeldungWebhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: message }),
-        });
-        if (res.ok) {
-          successEl.textContent = "Abmeldung erfolgreich gesendet!";
-          this.reset();
-        } else {
-          errorEl.textContent = "Fehler beim Senden an Discord.";
-        }
-      } catch {
-        errorEl.textContent = "Netzwerkfehler.";
-      }
-    });
-
-    // Team Info
-    document.getElementById('teamInfoForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const ueberschrift = this.ueberschrift.value.trim();
-      const haupttext = this.haupttext.value.trim();
-      const geschriebenVon = this.geschriebenVon.value.trim();
-
-      const errorEl = document.getElementById('teamInfoError');
-      const successEl = document.getElementById('teamInfoSuccess');
-      errorEl.textContent = "";
-      successEl.textContent = "";
-
-      const message = `📣 **Team Info**\n📌 **${ueberschrift}**\n\n${haupttext}\n\n✍️ **Von:** ${geschriebenVon}`;
-
-      try {
-        const res = await fetch(teamInfoWebhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: message }),
-        });
-        if (res.ok) {
-          successEl.textContent = "Team Info erfolgreich gesendet!";
-          document.getElementById('teamInfoBox').textContent = haupttext;
-          this.reset();
-        } else {
-          errorEl.textContent = "Fehler beim Senden an Discord.";
-        }
-      } catch {
-        errorEl.textContent = "Netzwerkfehler.";
-      }
-    });
-
-    // Meeting Formular
+    // Meeting
     document.getElementById('meetingForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+
       const datum = this.meetingDatum.value.trim();
       const grund = this.meetingGrund.value.trim();
       const leiter = this.meetingLeiter.value.trim();
-
       const errorEl = document.getElementById('meetingError');
       const successEl = document.getElementById('meetingSuccess');
       errorEl.textContent = "";
       successEl.textContent = "";
 
-      const message = `📅 **Neues Meeting geplant**\n🕒 **Datum:** ${datum}\n📋 **Thema:** ${grund}\n👤 **Leitung:** ${leiter}`;
+      const message = `📅 **Neues Meeting eingetragen**\n\n🕒 **Wann:** ${datum}\n📋 **Thema:** ${grund}\n👤 **Leiter:** ${leiter}`;
 
       try {
         const res = await fetch(meetingWebhookUrl, {
@@ -248,6 +250,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: message }),
         });
+
         if (res.ok) {
           successEl.textContent = "Meeting erfolgreich eingetragen!";
           const list = JSON.parse(localStorage.getItem('meetings') || "[]");
@@ -258,10 +261,11 @@
         } else {
           errorEl.textContent = "Fehler beim Senden an Discord.";
         }
-      } catch {
-        errorEl.textContent = "Netzwerkfehler.";
+      } catch (err) {
+        errorEl.textContent = "Netzwerkfehler beim Senden.";
       }
     });
   </script>
+
 </body>
 </html>
