@@ -13,7 +13,7 @@
       margin: 0 auto;
       padding: 2rem;
     }
-    h1, h2 {
+    h1, h2, h3 {
       color: #9fff5c;
     }
     label {
@@ -62,6 +62,17 @@
       border: none;
       border-top: 1px solid #666;
       margin: 2rem 0;
+    }
+    details {
+      margin-top: 1rem;
+      background: #2a2a2a;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: #9fff5c;
     }
   </style>
 </head>
@@ -160,11 +171,31 @@
     </form>
   </section>
 
+  <hr />
+
+  <!-- Kummerkasten -->
+  <section>
+    <h2>Kummerkasten 📨</h2>
+    <p>Teile anonym dein Feedback. Deine Nachricht ist für alle sichtbar.</p>
+
+    <form id="kummerForm">
+      <label for="kummerNachricht">Nachricht:</label>
+      <textarea id="kummerNachricht" required placeholder="Was möchtest du loswerden? (anonym)"></textarea>
+      <button type="submit">Absenden</button>
+      <p id="kummerError" class="error"></p>
+    </form>
+
+    <hr />
+    <h3>📬 Eingegangene Nachrichten:</h3>
+    <div id="kummerListe"></div>
+  </section>
+
+  <!-- Script -->
   <script>
-    const abmeldungWebhookUrl = "https://discord.com/api/webhooks/1397035955671798033/mcDxMU3kHKNl_9ev-afJ_xGI79vvkfwFIV502e0mB8omEOZ-_zxC6bRjs7RraC-QuLJW";
-    const teamInfoWebhookUrl = "https://discord.com/api/webhooks/1397036110651330684/B0DmsHjO2cNtmD426cyLk49ymOXc_2PymjMJRSMpyw0-rwL1MjNVgXj-16uQeQDob3l3";
-    const meetingWebhookUrl = "https://discord.com/api/webhooks/1397079732733874309/pUD5fa9i3SblLV6sT2uMMms-hf80xBycKIgl_h8YKy4bZePu6t-_dseR64Fd7ixEVhuX";
-    const abstimmungWebhookUrl = "https://discord.com/api/webhooks/1397080136347549836/YCNK3xZejDYa2fsCwTPiAB3egOp0iEVQDo4HDmtR78-B_mPtRRkLCmVnjsXBuLF6Pgdo";
+    const abmeldungWebhookUrl = "DEIN_ABMELDUNG_WEBHOOK";
+    const teamInfoWebhookUrl = "DEIN_TEAMINFO_WEBHOOK";
+    const meetingWebhookUrl = "DEIN_MEETING_WEBHOOK";
+    const abstimmungWebhookUrl = "DEIN_ABSTIMMUNG_WEBHOOK";
 
     // Abmeldung
     document.getElementById('abmeldungForm').addEventListener('submit', async function(e) {
@@ -235,7 +266,7 @@
       }
     });
 
-    // Meetingliste
+    // Meetingliste anzeigen
     function showMeetingList() {
       const list = JSON.parse(localStorage.getItem('meetings') || "[]");
       const display = document.getElementById('meetingListContent');
@@ -249,7 +280,7 @@
     }
     showMeetingList();
 
-    // Meeting
+    // Meeting eintragen
     document.getElementById('meetingForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -323,6 +354,71 @@
       }
     });
 
+    // Kummerkasten
+    const kummerForm = document.getElementById('kummerForm');
+    const kummerListe = document.getElementById('kummerListe');
+    const kummerError = document.getElementById('kummerError');
+    let nachrichten = JSON.parse(localStorage.getItem('kummerNachrichten') || "[]");
+
+    function renderKummerkasten() {
+      kummerListe.innerHTML = '';
+      nachrichten.forEach((msg, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('info-box');
+        wrapper.innerHTML = `
+          <p><strong>📝 Nachricht ${index + 1}:</strong><br>${msg.text}</p>
+          <div id="antworten-${index}">
+            ${msg.antwort ? `<p><strong>Antwort:</strong> ${msg.antwort}</p>` : ''}
+          </div>
+          ${!msg.antwort ? `
+          <details>
+            <summary>Antwort schreiben (nur mit Passwort)</summary>
+            <form onsubmit="antwortSpeichern(event, ${index})">
+              <label for="antwort-${index}">Antwort:</label>
+              <textarea id="antwort-${index}" required></textarea>
+              <label for="pw-${index}">Passwort:</label>
+              <input type="password" id="pw-${index}" required />
+              <button type="submit">Antwort absenden</button>
+              <p id="fehler-${index}" class="error"></p>
+            </form>
+          </details>
+          ` : ''}
+        `;
+        kummerListe.appendChild(wrapper);
+      });
+    }
+
+    kummerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const text = document.getElementById('kummerNachricht').value.trim();
+      if (text.length < 5) {
+        kummerError.textContent = "Bitte gib eine etwas längere Nachricht ein.";
+        return;
+      }
+      nachrichten.push({ text, antwort: null });
+      localStorage.setItem('kummerNachrichten', JSON.stringify(nachrichten));
+      this.reset();
+      kummerError.textContent = "";
+      renderKummerkasten();
+    });
+
+    window.antwortSpeichern = function(e, index) {
+      e.preventDefault();
+      const antwortText = document.getElementById(`antwort-${index}`).value.trim();
+      const pw = document.getElementById(`pw-${index}`).value.trim();
+      const fehler = document.getElementById(`fehler-${index}`);
+
+      if (pw !== "FlexCity") {
+        fehler.textContent = "Falsches Passwort.";
+        return;
+      }
+
+      nachrichten[index].antwort = antwortText;
+      localStorage.setItem('kummerNachrichten', JSON.stringify(nachrichten));
+      renderKummerkasten();
+    };
+
+    renderKummerkasten();
   </script>
 
 </body>
