@@ -276,10 +276,34 @@
   </section>
 
 <script>
-  // Abmeldung-Formular Logik
+  // --- Lokaler Speicher Helfer ---
+  const STORAGE_KEYS = {
+    abmeldungen: 'flexcity_abmeldungen',
+    teamInfo: 'flexcity_teamInfo',
+    meetings: 'flexcity_meetings',
+    abstimmungen: 'flexcity_abstimmungen',
+    kummer: 'flexcity_kummer',
+    teamMembers: 'flexcity_teamMembers',
+    bans: 'flexcity_bans'
+  };
+
+  // Lade Daten aus localStorage oder Default
+  function loadData(key, defaultValue) {
+    const data = localStorage.getItem(key);
+    if (data) return JSON.parse(data);
+    return defaultValue;
+  }
+  // Speichern
+  function saveData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  // --- Abmeldung-Formular Logik ---
   const abmeldungForm = document.getElementById('abmeldungForm');
   const abmeldungError = document.getElementById('abmeldungError');
   const abmeldungSuccess = document.getElementById('abmeldungSuccess');
+
+  let abmeldungen = loadData(STORAGE_KEYS.abmeldungen, []);
 
   abmeldungForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -302,15 +326,29 @@
       return;
     }
 
+    abmeldungen.push({ wer, von, bis, grund });
+    saveData(STORAGE_KEYS.abmeldungen, abmeldungen);
+
     abmeldungSuccess.textContent = `Abmeldung von ${wer} erfolgreich eingetragen für den Zeitraum von ${von} bis ${bis}.`;
     abmeldungForm.reset();
   });
 
-  // Team Information Logik
+  // --- Team Information Logik ---
   const teamInfoForm = document.getElementById('teamInfoForm');
   const teamInfoBox = document.getElementById('teamInfoBox');
   const teamInfoError = document.getElementById('teamInfoError');
   const teamInfoSuccess = document.getElementById('teamInfoSuccess');
+
+  let teamInfo = loadData(STORAGE_KEYS.teamInfo, null);
+
+  function renderTeamInfo() {
+    if (!teamInfo) {
+      teamInfoBox.innerHTML = 'Keine Verfügbar';
+      return;
+    }
+    teamInfoBox.innerHTML = `<h3>${teamInfo.ueberschrift}</h3><p>${teamInfo.haupttext.replace(/\n/g, '<br>')}</p><p><em>Geschrieben von: ${teamInfo.geschriebenVon}</em></p>`;
+  }
+  renderTeamInfo();
 
   teamInfoForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -326,18 +364,21 @@
       return;
     }
 
-    teamInfoBox.innerHTML = `<h3>${ueberschrift}</h3><p>${haupttext.replace(/\n/g, '<br>')}</p><p><em>Geschrieben von: ${geschriebenVon}</em></p>`;
+    teamInfo = { ueberschrift, haupttext, geschriebenVon };
+    saveData(STORAGE_KEYS.teamInfo, teamInfo);
+    renderTeamInfo();
+
     teamInfoSuccess.textContent = 'Team Information erfolgreich aktualisiert.';
     teamInfoForm.reset();
   });
 
-  // Meetings Logik
+  // --- Meetings Logik ---
   const meetingForm = document.getElementById('meetingForm');
   const meetingListContent = document.getElementById('meetingListContent');
   const meetingError = document.getElementById('meetingError');
   const meetingSuccess = document.getElementById('meetingSuccess');
 
-  let meetings = [];
+  let meetings = loadData(STORAGE_KEYS.meetings, []);
 
   meetingForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -354,6 +395,7 @@
     }
 
     meetings.push({ datum, grund, leiter });
+    saveData(STORAGE_KEYS.meetings, meetings);
     updateMeetingList();
     meetingSuccess.textContent = 'Meeting erfolgreich eingetragen.';
     meetingForm.reset();
@@ -372,11 +414,14 @@
     }
     meetingListContent.innerHTML = html;
   }
+  updateMeetingList();
 
-  // Abstimmung Logik
+  // --- Abstimmung Logik ---
   const abstimmungForm = document.getElementById('abstimmungForm');
   const abstimmungError = document.getElementById('abstimmungError');
   const abstimmungSuccess = document.getElementById('abstimmungSuccess');
+
+  let abstimmungen = loadData(STORAGE_KEYS.abstimmungen, []);
 
   abstimmungForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -384,21 +429,26 @@
     abstimmungSuccess.textContent = '';
 
     const was = abstimmungForm.abstimmungWas.value.trim();
+    const zusatz = abstimmungForm.abstimmungZusatz.value.trim();
+
     if (!was) {
       abstimmungError.textContent = 'Bitte das Thema der Abstimmung eingeben.';
       return;
     }
+
+    abstimmungen.push({ was, zusatz, zeit: new Date().toISOString() });
+    saveData(STORAGE_KEYS.abstimmungen, abstimmungen);
     abstimmungSuccess.textContent = 'Abstimmung erfolgreich eingetragen.';
     abstimmungForm.reset();
   });
 
-  // Kummerkasten Logik
+  // --- Kummerkasten Logik ---
   const kummerForm = document.getElementById('kummerForm');
   const kummerNachricht = document.getElementById('kummerNachricht');
   const kummerListe = document.getElementById('kummerListe');
   const kummerError = document.getElementById('kummerError');
 
-  let kummerMessages = [];
+  let kummerMessages = loadData(STORAGE_KEYS.kummer, []);
 
   kummerForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -408,159 +458,160 @@
       kummerError.textContent = 'Bitte eine Nachricht eingeben.';
       return;
     }
-    kummerMessages.push(msg);
-    updateKummerListe();
+    kummerMessages.push({ text: msg, zeit: new Date().toLocaleString() });
+    saveData(STORAGE_KEYS.kummer, kummerMessages);
+    renderKummer();
     kummerNachricht.value = '';
   });
 
-  function updateKummerListe() {
+  function renderKummer() {
     if (kummerMessages.length === 0) {
-      kummerListe.textContent = 'Keine Nachrichten vorhanden.';
+      kummerListe.innerHTML = '<p>Keine Nachrichten.</p>';
       return;
     }
-    kummerListe.innerHTML = '';
-    kummerMessages.forEach((msg, idx) => {
-      const p = document.createElement('p');
-      p.textContent = `• ${msg}`;
-      kummerListe.appendChild(p);
-    });
+    let html = '';
+    for (const m of kummerMessages) {
+      html += `<div style="border-bottom:1px solid #444; margin-bottom:0.5rem; padding-bottom:0.5rem;">
+      <small>${m.zeit}</small><br />${m.text}</div>`;
+    }
+    kummerListe.innerHTML = html;
   }
+  renderKummer();
 
-  // Passwort geschützter Bereich - Anzeige (Passwort: 2012)
-  const viewPassBtn = document.getElementById('viewPassBtn');
+  // --- Team Mitglieder & Banns Speicher und Darstellung ---
+  let teamMembers = loadData(STORAGE_KEYS.teamMembers, {
+    "Owner": ["[Flex City] KitBary_YT"],
+    "Community Manager": ["Flex City Paul"],
+    "Head Admin": [],
+    "Normaler Admin": [],
+    "Supportleitung": [],
+    "Supporter": [],
+    "Builder": [],
+    "Tester": []
+  });
+
+  let bans = loadData(STORAGE_KEYS.bans, []);
+
+  const teamMembersList = document.getElementById('teamMembersList');
+  const banList = document.getElementById('banList');
+
+  function renderTeamAndBans() {
+    // Team Mitglieder anzeigen
+    teamMembersList.innerHTML = '';
+    for (const role in teamMembers) {
+      const members = teamMembers[role];
+      const displayMembers = members.length ? members.join(', ') : 'Keine Mitglieder';
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${role}:</strong> ${displayMembers}`;
+      teamMembersList.appendChild(li);
+    }
+
+    // Banns anzeigen
+    banList.innerHTML = '';
+    if (bans.length === 0) {
+      banList.innerHTML = '<li>Keine Banns vorhanden.</li>';
+    } else {
+      for (const b of bans) {
+        const li = document.createElement('li');
+        li.textContent = `${b.name} - Grund: ${b.grund}`;
+        banList.appendChild(li);
+      }
+    }
+  }
+  renderTeamAndBans();
+
+  // --- Passwort Bereiche ---
   const viewPassInput = document.getElementById('viewPass');
+  const viewPassBtn = document.getElementById('viewPassBtn');
   const viewPassError = document.getElementById('viewPassError');
   const secureView = document.getElementById('secureView');
 
-  viewPassBtn.addEventListener('click', () => {
-    viewPassError.textContent = '';
-    if (viewPassInput.value === '2012') {
-      secureView.classList.remove('hidden');
-      viewPassInput.value = '';
-      viewPassInput.disabled = true;
-      viewPassBtn.disabled = true;
-    } else {
-      viewPassError.textContent = 'Falsches Passwort!';
-    }
-  });
-
-  // Passwort geschützter Bereich - Bearbeiten (Passwort: FlexCity)
-  const editPassBtn = document.getElementById('editPassBtn');
   const editPassInput = document.getElementById('editPass');
+  const editPassBtn = document.getElementById('editPassBtn');
   const editPassError = document.getElementById('editPassError');
   const secureEdit = document.getElementById('secureEdit');
 
-  // Dynamische Daten für Teammitglieder und Banns
-  let teamMembers = [
-    { role: "Owner", name: "[Flex City] KitBary_YT" },
-    { role: "Community Manager", name: "Flex City Paul" },
-    // die anderen sind leer
-    { role: "Head Admin", name: null },
-    { role: "Normaler Admin", name: null },
-    { role: "Supportleitung", name: null },
-    { role: "Supporter", name: null },
-    { role: "Builder", name: null },
-    { role: "Tester", name: null },
-  ];
-  let bans = [];
+  // Passwort Konstanten
+  const VIEW_PASS = '2012';
+  const EDIT_PASS = 'FlexCity';
 
-  function refreshTeamMembersDisplay() {
-    const ul = document.getElementById('teamMembersList');
-    ul.innerHTML = '';
-    teamMembers.forEach(tm => {
-      ul.innerHTML += `<li><strong>${tm.role}:</strong> ${tm.name ? tm.name : "Keine Mitglieder"}</li>`;
-    });
-  }
-
-  function refreshBanListDisplay() {
-    const ul = document.getElementById('banList');
-    if (bans.length === 0) {
-      ul.innerHTML = '<li>Keine Banns vorhanden.</li>';
+  // View Bereich Passwort Check
+  viewPassBtn.addEventListener('click', () => {
+    const pass = viewPassInput.value.trim();
+    if (pass === VIEW_PASS) {
+      secureView.classList.remove('hidden');
+      viewPassError.textContent = '';
+      viewPassInput.value = '';
     } else {
-      ul.innerHTML = '';
-      bans.forEach(ban => {
-        ul.innerHTML += `<li><strong>${ban.name}:</strong> ${ban.reason}</li>`;
-      });
-    }
-  }
-
-  // Initiale Anzeige updaten
-  refreshTeamMembersDisplay();
-  refreshBanListDisplay();
-
-  editPassBtn.addEventListener('click', () => {
-    editPassError.textContent = '';
-    if (editPassInput.value === 'FlexCity') {
-      secureEdit.classList.remove('hidden');
-      editPassInput.value = '';
-      editPassInput.disabled = true;
-      editPassBtn.disabled = true;
-    } else {
-      editPassError.textContent = 'Falsches Passwort!';
+      viewPassError.textContent = 'Falsches Passwort!';
+      secureView.classList.add('hidden');
     }
   });
 
-  // Team Mitglieder hinzufügen
+  // Edit Bereich Passwort Check
+  editPassBtn.addEventListener('click', () => {
+    const pass = editPassInput.value.trim();
+    if (pass === EDIT_PASS) {
+      secureEdit.classList.remove('hidden');
+      editPassError.textContent = '';
+      editPassInput.value = '';
+    } else {
+      editPassError.textContent = 'Falsches Passwort!';
+      secureEdit.classList.add('hidden');
+    }
+  });
+
+  // --- Team Mitglieder hinzufügen ---
   const teamAddForm = document.getElementById('teamAddForm');
+
   teamAddForm.addEventListener('submit', e => {
     e.preventDefault();
+
     const role = document.getElementById('roleName').value.trim();
     const name = document.getElementById('memberName').value.trim();
-    if (!role || !name) {
-      alert('Bitte Rolle und Namen eingeben!');
-      return;
-    }
 
-    // Falls Rolle schon vorhanden, aktualisieren, sonst hinzufügen
-    let found = false;
-    for (let i = 0; i < teamMembers.length; i++) {
-      if (teamMembers[i].role.toLowerCase() === role.toLowerCase()) {
-        teamMembers[i].name = name;
-        found = true;
-        break;
-      }
+    if (!role || !name) return;
+
+    if (!teamMembers[role]) {
+      teamMembers[role] = [];
     }
-    if (!found) {
-      teamMembers.push({ role, name });
-    }
-    refreshTeamMembersDisplay();
+    teamMembers[role].push(name);
+    saveData(STORAGE_KEYS.teamMembers, teamMembers);
+
+    renderTeamAndBans();
     teamAddForm.reset();
   });
 
-  // Bann hinzufügen
+  // --- Banns hinzufügen ---
   const banAddForm = document.getElementById('banAddForm');
+
   banAddForm.addEventListener('submit', e => {
     e.preventDefault();
+
     const name = document.getElementById('banName').value.trim();
-    const reason = document.getElementById('banGrund').value.trim();
-    if (!name || !reason) {
-      alert('Bitte Name und Grund eingeben!');
-      return;
-    }
-    bans.push({ name, reason });
-    refreshBanListDisplay();
+    const grund = document.getElementById('banGrund').value.trim();
+
+    if (!name || !grund) return;
+
+    bans.push({ name, grund });
+    saveData(STORAGE_KEYS.bans, bans);
+
+    renderTeamAndBans();
     banAddForm.reset();
   });
 
-  // Abmelden Button
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    // Seite zurücksetzen (Sichtbarkeit)
+  // --- Abmelden Button ---
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  logoutBtn.addEventListener('click', () => {
     secureView.classList.add('hidden');
     secureEdit.classList.add('hidden');
-
-    // Passwörter zurücksetzen
-    viewPassInput.disabled = false;
     viewPassInput.value = '';
-    viewPassBtn.disabled = false;
-
-    editPassInput.disabled = false;
     editPassInput.value = '';
-    editPassBtn.disabled = false;
-
-    alert('Du wurdest abgemeldet!');
+    viewPassError.textContent = '';
+    editPassError.textContent = '';
   });
 
 </script>
-
 </body>
 </html>
